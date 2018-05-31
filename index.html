@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="libs\jquery-3.1.1.min.js"></script>
+    <script>if (window.module) module = window.module;</script>
+    <script>
+        // You can also require other files to run in this process
+        var {ipcRenderer} = require('electron');  
+
+        function startDownload() {
+          var time = document.getElementById('waitTime').value
+          var url = document.getElementById('inputUrl').value
+          var bandwidth = document.getElementById('bandwidth').value
+          ipcRenderer.send('startDownloadWithDelay', time, url, bandwidth);
+          document.getElementById('start').disabled = true;
+          document.getElementById('clear').disabled = true;
+          document.getElementById('stop').disabled = false;
+        }
+
+        function stopDownload() {
+          ipcRenderer.send('stopDownload');
+          document.getElementById('start').disabled = false;
+          document.getElementById('clear').disabled = false;
+          document.getElementById('stop').disabled = true;
+        }
+
+        function clearDownload() {
+          var url = document.getElementById('inputUrl').value
+          ipcRenderer.send('clearDownload', url);
+          document.getElementById('start').disabled = true;
+          let progressTxtArea = document.getElementById('progressTxt');
+          progressTxtArea.value = "";
+          document.getElementById('start').disabled = false;
+          document.getElementById('clear').disabled = true;
+          document.getElementById('stop').disabled = true;
+        }
+
+        ipcRenderer.on("progress", (event, text) => {
+          let progressTxtArea = document.getElementById('progressTxt');
+          progressTxtArea.value = progressTxtArea.value + "\n" +  text;
+          progressTxtArea.scrollTop = progressTxtArea.scrollHeight 
+        });
+
+        ipcRenderer.on("done", (event) => {
+          document.getElementById('start').disabled = false;
+          document.getElementById('clear').disabled = false;
+          document.getElementById('stop').disabled = true;
+        });
+      </script>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <p>Click the button to wait 3 seconds, then alert "Hello".</p>
+    URL:<br> 
+    http://apac1.download.cp.thomsonreuters.net/Packages/EikonLightMac/EikonLightMac_Core_1_2_159.zip<br>
+    https://bams-amers-sami.int.thomsonreuters.com/artifactory/default.generic.local/eikon-setup/deploy/EikonLightMac_Core_1.2.159.7z<br>
+    https://nodejs.org/dist/v8.11.2/node-v8.11.2.tar.gz<br><br>
+    <input size="100" type="text" id="inputUrl" value="https://nodejs.org/dist/v8.11.2/node-v8.11.2.tar.gz"><br><br>
+    Wait Time (minutes):<br> <input type="text" id="waitTime" value=0><br><br>
+    Bandwidth:<br>
+    5000000 = 5 MB/s<br>
+    1000000 = 1 MB/s<br>
+    500000 = 500 KB/s<br>
+    0 = Unlimit<br>
+    <input type="text" id="bandwidth" value="5000000"><br><br>
+    
+    
+    <button id="start" onclick="startDownload()">Start</button>
+    <button id="stop" onclick="stopDownload()" disabled>Stop</button>
+    <button id="clear" onclick="clearDownload()">Clear</button>
+    <br><br>
+    <textarea id="progressTxt" name="Text1" cols="100" rows="15" size="100"></textarea>
+  </body>
+
+  
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "electron-download-throttle",
+  "version": "1.0.0",
+  "description": "The demo electron app to download file with the network throttle",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Santi2525/electron-download-throttle.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/Santi2525/electron-download-throttle/issues"
+  },
+  "homepage": "https://github.com/Santi2525/electron-download-throttle#readme",
+  "devDependencies": {
+    "electron": "1.7.11",
+    "electron-packager": "10.1.1"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "fs-extra": "^6.0.1",
+    "minimist": "^1.2.0",
+    "ramda": "^0.25.0",
+    "request-progress": "^3.0.0"
+  }
+}

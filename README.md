@@ -29,6 +29,10 @@ cd electron-download-throttle
 npm install && npm run start
 ```
 
+Click "Start" to start download the file with the network throttle.
+Click "Stop" to stop download the file.
+Click "Clear" to clear the output log and remove the downloaded file 
+
 Learn more about Electron and its API in the [documentation](http://electron.atom.io/docs/latest).
 
 ## Other Example Apps

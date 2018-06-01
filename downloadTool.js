@@ -27,11 +27,24 @@ function stopDownload() {
 
 function clearDownload(url2) {
     stopDownload();
-    var dest = path.join(process.cwd(), url2.split('/').pop());
+    var target = targetPath(url2);
+    var temp = tempPath(url2);
 
-    if (fse.existsSync(dest)) {
-        fse.unlinkSync(dest)
+    if (fse.existsSync(target)) {
+        fse.unlinkSync(target)
     }
+
+    if (fse.existsSync(temp)) {
+        fse.unlinkSync(temp)
+    }
+}
+
+function targetPath() {
+    return path.join(process.cwd(), url.split('/').pop());
+}
+
+function tempPath() {
+    return targetPath() + ".download";
 }
 
 function download() {
@@ -39,22 +52,23 @@ function download() {
     writeProgress("download ()")
     let self = this;
     return new Promise((resolve, reject) => {
-        var dest = path.join(process.cwd(), url.split('/').pop());
-        writeProgress('url: ' + dest);
-        writeProgress('dest: ' + dest);
+        var tempDownload = tempPath();
+        var targetFile = targetPath();
+        writeProgress('url: ' + tempDownload);
+        writeProgress('dest: ' + tempDownload);
         writeProgress('throttle: ' + throttle);
         
         let option = {
             resume: true,
             output: {
-                path: path.join(dest),
+                path: path.join(tempDownload),
                 filename: ''
             },
         };        
                
         let downloader = new downloader_1.Downloader();
         let unlinkAndReject = ((msg) => () => {
-            fse.unlink(dest);
+            fse.unlink(tempDownload);
             reject(msg);
         });
         downloader.download(url, option, throttle).then(req => {
@@ -71,6 +85,11 @@ function download() {
                 if (response.statusCode !== 200 && response.statusCode !== 206) {
                     return reject(`Error response from server: ${response.statusCode.toString()}`);
                 }
+
+                response.on("error", (err) => {
+                    writeProgress('Error' + err);
+                })
+
                 response.pipe(stream);
                 response.on('end', () => {
                     done();
@@ -127,6 +146,10 @@ function writeProgress(text) {
 }
 
 function done() {
+    if (fse.existsSync(tempPath())) { 
+        fse.renameSync(tempPath(), targetPath());
+    }
+    
     writeProgress('[Deployment] Download completed');
     self.mainWindow.webContents.send('done');
 }

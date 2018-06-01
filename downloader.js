@@ -58,6 +58,7 @@ class Downloader {
             option.resume = option.resume && resume;
             var ses = electron_1.session.fromPartition('downloader', { cache: false });
             console.log('Downloader.download => throttle: ' + throttle);
+            ses.disableNetworkEmulation();
             ses.enableNetworkEmulation({
                 downloadThroughput: parseInt(throttle),
             });
